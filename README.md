@@ -2,6 +2,13 @@
 
 A web application for measuring enzyme activity through CSV data analysis, visualization, linear regression, and UV-Vis spectroscopy calculations.
 
+## 🚀 New to Deployment?
+
+**Just deployed to Netlify?** Check out these quick guides:
+- 📖 **[QUICK_START.md](QUICK_START.md)** - Fast deployment guide (2 minutes)
+- 🔍 **[NETLIFY_REVIEW.md](NETLIFY_REVIEW.md)** - Comprehensive review & recommendations
+- 📋 **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Detailed deployment instructions
+
 ## Features
 
 - **CSV File Upload**: Upload CSV files with x and y columns
