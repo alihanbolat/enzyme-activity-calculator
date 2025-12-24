@@ -1,0 +1,22 @@
+# Test files
+test_with_nonlinear.csv
+sample_enzyme_data.csv
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files (if you add any later)
+.env
+.env.local

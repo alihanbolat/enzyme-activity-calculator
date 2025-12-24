@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Measurement - Enzyme Activity Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 {
+            color: #667eea;
+            margin: 0;
+        }
+        .navbar-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn-dashboard {
+            background: #667eea;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .btn-logout {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .sample-info-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .sample-info-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>🧪 Enzyme Activity Calculator</h2>
+        <div class="navbar-right">
+            <a href="dashboard.html" class="btn-dashboard">← Dashboard</a>
+            <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>New Measurement</h1>
+            <p>Upload your CSV file to analyze enzyme activity</p>
+        </header>
+
+        <div class="sample-info-section">
+            <h3>Sample Information</h3>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="sampleName">Sample Name *</label>
+                    <input type="text" id="sampleName" placeholder="Enter sample name" required 
+                           style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1em;">
+                </div>
+                <div class="input-group">
+                    <label for="notes">Notes (Optional)</label>
+                    <textarea id="notes" placeholder="Add notes about this measurement" 
+                              style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1em; min-height: 80px; resize: vertical;"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="csvFile" accept=".csv" />
+                <label for="csvFile" class="file-label">Choose CSV File</label>
+                <span id="fileName" class="file-name">No file chosen</span>
+            </div>
+            <button id="analyzeBtn" class="btn-primary" disabled>Analyze Data</button>
+        </div>
+
+        <div id="results" class="results-section" style="display: none;">
+            <div class="chart-container">
+                <canvas id="dataChart"></canvas>
+            </div>
+
+            <div class="stats-container">
+                <h2>Linear Regression Results</h2>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <h3>Slope (m)</h3>
+                        <p id="slope" class="stat-value">-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Intercept (b)</h3>
+                        <p id="intercept" class="stat-value">-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>R² Value</h3>
+                        <p id="r2" class="stat-value">-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Data Points</h3>
+                        <p id="dataPoints" class="stat-value">-</p>
+                    </div>
+                </div>
+                <div class="equation">
+                    <h3>Linear Region (X Range)</h3>
+                    <p id="linearRange" class="equation-value">-</p>
+                </div>
+                <div class="equation">
+                    <h3>Regression Equation</h3>
+                    <p id="equation" class="equation-value">-</p>
+                </div>
+            </div>
+
+            <div class="activity-calculator">
+                <h2>Enzyme Activity Calculation</h2>
+                <p class="calculator-description">Calculate enzyme activity using the slope from linear regression</p>
+                
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="volumeSample">Volume (Sample)</label>
+                        <div class="input-with-unit">
+                            <input type="number" id="volumeSample" value="0.02" step="0.001" min="0.001">
+                            <span class="unit">ml</span>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="volumeAssay">Volume (Assay)</label>
+                        <div class="input-with-unit">
+                            <input type="number" id="volumeAssay" value="1" step="0.1" min="0.1">
+                            <span class="unit">ml</span>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="dilution">Dilution Factor</label>
+                        <div class="input-with-unit">
+                            <input type="number" id="dilution" value="1" step="1" min="1">
+                            <span class="unit">×</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fixed-parameters">
+                    <p><strong>Fixed Parameters:</strong></p>
+                    <p>Extinction Coefficient (ε): <span class="param-value">0.02 mM⁻¹cm⁻¹</span></p>
+                    <p>Cuvette Diameter: <span class="param-value">1 cm</span></p>
+                </div>
+
+                <button id="calculateActivityBtn" class="btn-calculate">Calculate Enzyme Activity</button>
+
+                <div id="activityResult" class="activity-result" style="display: none;">
+                    <h3>Enzyme Activity</h3>
+                    <p class="activity-value" id="activityValue">-</p>
+                    <p class="activity-unit">U/ml</p>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button id="saveToDbBtn" class="btn-export" style="flex: 1; background: #28a745;">
+                            <span>💾</span> Save to Database
+                        </button>
+                        <button id="exportExcelBtn" class="btn-export" style="flex: 1;">
+                            <span>📊</span> Export to Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="error" class="error-message" style="display: none;"></div>
+        <div id="success" class="success-message" style="display: none; background: #d4edda; color: #155724; padding: 15px; border-radius: 6px; margin-top: 20px; border: 1px solid #c3e6cb;"></div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
