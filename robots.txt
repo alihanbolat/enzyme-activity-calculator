@@ -1,0 +1,17 @@
+# Robots.txt for Enzyme Activity Calculator
+# Allow all search engines to crawl the site
+
+User-agent: *
+Allow: /
+
+# Disallow authentication-related pages from search indexing
+Disallow: /login.html
+Disallow: /dashboard.html
+Disallow: /measurement.html
+Disallow: /sample.html
+
+# Allow only the landing page to be indexed
+Allow: /
+
+# Sitemap (update with your actual Netlify URL after deployment)
+# Sitemap: https://your-site.netlify.app/sitemap.xml

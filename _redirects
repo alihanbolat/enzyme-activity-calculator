@@ -1,0 +1,6 @@
+# Netlify Redirects File
+# This provides an alternative/backup to netlify.toml redirects
+
+# SPA-like routing - redirect all requests to index.html
+# This allows direct navigation to any page
+/*    /index.html   200
